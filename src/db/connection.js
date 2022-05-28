@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
     try {
         mongoose.connection
             .on('error', console.error.bind(console, '->Connection error:'))
-            .once('open', () => console.log('->Successfully connected!'));
+            .once('open', () => console.log('\n->Successfully connected!'));
         await mongoose.connect(process.env.MONGO_URI)
         // await mongoose.set('debug', true);
         // await mongoose.set('debug', function(collectionName, methodName, ...methodArgs) { console.log(`->Mongoose: ${collectionName}.${methodName}(${methodArgs.join(', ')})`); });

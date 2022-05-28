@@ -3,9 +3,10 @@ const yargs = require('yargs');
 const mongoose = require("mongoose");
 const { addMovie, addMovieOrActors, listMovie, deleteMovies, updateMovieByQuery } = require('./movie/functions');
 
+
 const app = async (yargsObj) => {
     
-    console.log('app->yargsObj:', yargsObj);
+    console.log('\n->App: yargsObj:', yargsObj);
 
     // create my own movie object with custom properties and some normalization
     // only to pass on the data to the addMovie/lostMovie/updateMovie/deleteMovie functions
@@ -36,43 +37,50 @@ const app = async (yargsObj) => {
         delete movieObj.newActor;
     }
 
-    console.log('app->movieObj: ', movieObj, '\n' );
+    console.log('\n->App: movieObj: ', movieObj, '\n' );
+
 
     if (yargsObj.add){
         // add the movie if there's a title
         if( movieObj.title )
             await addMovieOrActors( movieObj );
         else 
-            console.log('Command si invalid for adding a movie, movieObj: ', movieObj);
+            console.log('Command is invalid for adding a movie, movieObj: ', movieObj);
+
 
     } else if (yargsObj.list) {
-        // todo: fix the lag issue after the listing is done
         // find movies -- giving it no value will list all
         await listMovie( movieObj.title ) ;  //yargsObj.title
 
+
     } else if (yargsObj.update) {
         //update a movie
+
         // return true if there are keys that start with 'new': newTitle, newActors, newWhatever
         const hasNewKeys = () => Object.keys(movieObj)
             .filter( it => it.slice(0,3).toLowerCase()==='new' )
             .length > 0;
-        //console.log('app -> update branch -> hasNewKeys: ', hasNewKeys());
-        //if( movieObj.title && (movieObj.newTitle || movieObj.newActors) )
+
+        // has to have a title and either keys starting with 'new' or a 'drop' key
         if( movieObj.title && (hasNewKeys() || typeof movieObj.drop == 'string') )
             await updateMovieByQuery( movieObj.title, movieObj )
         else 
-            console.log('Command si invalid for updating movies, movieObj: ', movieObj);
+            console.log('Command is invalid for updating movies, movieObj: ', movieObj);
+
 
     } else if (yargsObj.delete) {
-        //delete a movie
+        //delete a movie (or more)
+
+        // has to have a title (the filter text)
         if( movieObj.title )
             await deleteMovies( movieObj.title )
         else 
-            console.log('Command si invalid for deleting movies, movieObj: ', movieObj);
+            console.log('Command is invalid for deleting movies; movieObj: ', movieObj);
+
 
     } else if (yargsObj.sample || yargsObj.demo) {
         // add some sample movies to the database
-        console.log('Sample data will be added');
+
         const movieList = [
             {title: "Spiderman", actors: "Tom Holland", rating: 1},
             {title: "Spiderman 2", actors: "Andrew Garfield", crossover: true},
@@ -80,33 +88,41 @@ const app = async (yargsObj) => {
             {title: "Aquaman", actors: "Jasona Momoa", rating: 3},
             {title: "Alien Ant Farm", actors: "Michael Jackson", world: "earth33", genre: "horror/fantasy"},
             {title: "My life", actors: "Myself", ending: undefined},
-            {title: "The unknown actor", rating: 13}
+            {title: "The unknown actor", rating: 4}
         ];
+        // can add an array of documents, with a bunch of keys outside of the schema
         await addMovie( movieList );
+        console.log('Sample data was added to the collection.');
+
 
     } else if (yargsObj.purge) {
         // purge all data from the database
+
+        // the filter tells it to delete all
         await deleteMovies( '*' )
         console.log('All data has been purged');
 
+
     } else {
-        console.log("Incorrect command");
+        console.log("Incorrect command; movieObj:", movieObj);
     }
 
     // disconnect in 20 milliseconds
-    setTimeout( async () => { 
+    // setTimeout( async () => { 
         await mongoose.disconnect(); 
         //await mongoose.connection.close()
-        console.log('Disconnecting mongoose');
-    }, 20);
+        // console.log('Disconnecting mongoose');
+    // }, 20);
     
 }
 
 
 const showHelpInfo = () => {
     const helpText = [
+        "",
         "The following commands can be used:",
         "   node src/app.js <options>",
+        "",
         "These are the options:",
         "   --add --title <movieTitle> [--actors <actors>]",
         "   --add --movie <movieTitle> [--actors <actors>]",
@@ -121,7 +137,13 @@ const showHelpInfo = () => {
         "   --delete <*filter>",
         "   --sample, --demo",
         "   --purge",
-        "add - adds, list - lists, update - changes, delete - deletes, sample/demo - fills with sample data, purge - erases all"
+        "",
+        "--add: adds movie(s), if the movie exists, it adds the new actors to it",
+        "--list: lists movies (*text for matching records with 'text' wherever in title)",
+        "--update: changes the value of properties (can also add new properties or delete existent ones with drop)",
+        "--delete: erases documents (*text for partial search of text in title)",
+        "--purge: erases all records",
+        "--sample/demo: adds a bunch of records with sample data",
     ]
     console.log(helpText.join('\n'));
     mongoose.disconnect(); 
