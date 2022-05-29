@@ -43,7 +43,7 @@ These are the options:
 --add: adds movie(s), if the movie exists, it adds the new actors to it
 --list: lists movies (*text for matching records with 'text' wherever in title)
 --update: changes the value of properties (can also add new properties or delete existent ones with drop)
---delete: erases documents (*text for partial search of text in title)
+--delete: erases documents (prefix text with "*" for partial search of text in title)
 --purge: erases all records
 --sample/demo: adds a bunch of records with sample data
 --info: will display this text
