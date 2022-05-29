@@ -8,7 +8,7 @@ It accepts flexible arguments for CRUD operations, adding and removing fields.
 
 - Create an `.env` file in the root folder that has to contain something similar to this:
 
-`MONGO_URI = mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/m37movies?retryWrites=true&w=majority`
+`MONGO_URI = mongodb+srv://<user>:<pass>@cluster0.<cluster-name>.mongodb.net/m37movies?retryWrites=true&w=majority`
 - You can get your own by creating an Atlas account at [https://www.mongodb.com/](https://www.mongodb.com/)
 - Run `npm install` to install all dependencies. 
 
