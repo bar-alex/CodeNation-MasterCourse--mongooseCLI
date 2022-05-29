@@ -41,7 +41,7 @@ These are the options:
    --purge
 
 --add: adds movie(s), if the movie exists, it adds the new actors to it
---list: lists movies (*text for matching records with 'text' wherever in title)
+--list: lists movies (prefix text with "*" for matching records with 'text' wherever in title)
 --update: changes the value of properties (can also add new properties or delete existent ones with drop)
 --delete: erases documents (prefix text with "*" for partial search of text in title)
 --purge: erases all records
